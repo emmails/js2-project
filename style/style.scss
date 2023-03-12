@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    padding: 0;
+    color: white;
+    background-color: black;
+    .logo {
+        margin: 4em;
+    }
+}
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.selectDiv {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    .selectCharacter {
+        position: relative;
+        width: 15vw;
+        img {
+            width: 100%;
+        }
+        p {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+        }
+    }
+}
