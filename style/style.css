@@ -7,6 +7,9 @@ body {
 body .logo {
   margin: 4em;
 }
+body h1 {
+  text-align: center;
+}
 
 main {
   display: flex;
