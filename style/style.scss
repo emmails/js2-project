@@ -1,8 +1,10 @@
 body {
-    margin: 0;
+    margin: 30px;
     padding: 0;
     color: white;
-    background-color: black;
+    background-color: rgb(14, 14, 14);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 200%;
     .logo {
         margin: 4em;
     }
@@ -11,32 +13,102 @@ body {
     }
 }
 main {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin: 0 auto;
+}
+.flexDiv {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-.selectDiv {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    .selectCharacter {
-        position: relative;
-        width: 15vw;
-        img {
-            width: 100%;
+    button:not(.selectCharacter) {
+        margin: 40px 0;
+    }
+
+    .selectDiv {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+        .selectCharacter {
+            position: relative;
+            width: 150px;
+            padding: 0;
+            margin: 16px;
+            background-color: rgba(0, 0, 0, 0);
+            border: 0;
+            img {
+                width: 100%;
+                padding: 0;
+                box-shadow: rgba(255, 255, 255, 0.262) 1.95px 1.95px 2.6px;
+            }
+            p {
+                position: absolute;
+                top: 75%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+                display: none;
+                background-color: #0000005e;
+                width: 100%;
+                padding: 15px 0;
+            }
         }
-        p {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
+        .selectCharacter:hover {
+            p {
+                display: block;
+            }
+        }
+        .selectCharacter:disabled {
+            box-shadow: 0px 0px 20px rgb(255, 208, 0), 0px 0px 5px rgb(255, 208, 0), 0px 0px 5px rgb(255, 208, 0);
+            p {
+                display: block;
+            }
         }
     }
 }
 
+button:not(.selectCharacter) {
+    background-color: black;
+    color: white;
+    padding: 10px 18px;
+    text-transform: uppercase;
+    border: 0;
+    box-shadow: 0px 0px 5px #8d8d8d;
+}
+button:not(.selectCharacter):hover {
+    box-shadow: 0px 0px 20px rgb(255, 208, 0), 0px 0px 5px rgb(255, 208, 0), 0px 0px 5px rgb(255, 208, 0);
+}
 
-//! TEST
+.displayCharacter {
+    place-self: center;
+    text-align: center;
+    box-shadow: rgba(255, 255, 255, 0.1) 0px 0px 5px 0px, rgba(255, 255, 255, 0.1) 0px 0px 1px 0px;
+    margin: 20px;
+    padding-bottom: 20px;
+    max-width: 400px;
+    img {
+        width: 100%;
+    }
+    ul {
+        list-style: none;
+        margin: 20px 0;
+        padding-left: 0;
+    }
+}
+
+.funFact {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    text-align: center;
+    margin: 0 20px;
+    ul {
+        list-style: none;
+        padding-left: 0;
+    }
+}
+
+
 .popup {
     position: relative;
     display: inline-block;
@@ -45,49 +117,45 @@ main {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    .popuptext {
+        visibility: hidden;
+        width: 160px;
+        background-color: #ffe37d;
+        color: #000;
+        text-align: center;
+        border-radius: 6px;
+        padding: 12px 12px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -80px;
+      }
+      .popuptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #ffe37d transparent transparent transparent;
+      }
+      .show {
+        visibility: visible;
+        -webkit-animation: fadeIn 1s;
+        animation: fadeIn 1s;
+      }
   }
   
-  /* The actual popup */
-  .popup .popuptext {
-    visibility: hidden;
-    width: 160px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 8px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -80px;
+  span {
+    text-transform: none;
   }
   
-  /* Popup arrow */
-  .popup .popuptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #555 transparent transparent transparent;
-  }
-  
-  /* Toggle this class - hide and show the popup */
-  .popup .show {
-    visibility: visible;
-    -webkit-animation: fadeIn 1s;
-    animation: fadeIn 1s;
-  }
-  
-  /* Add animation (fade in the popup) */
   @-webkit-keyframes fadeIn {
     from {opacity: 0;} 
     to {opacity: 1;}
   }
-  
   @keyframes fadeIn {
     from {opacity: 0;}
     to {opacity:1 ;}
