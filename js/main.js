@@ -1,31 +1,31 @@
 let characterSelection = [{
     name: 'Luke Skywalker',
-    img: 'img/placeholder.jpg',
+    img: 'img/lukeskywalker.png',
     id: 1,
 },
 {
     name: 'Leia Organa',
-    img: 'img/placeholder.jpg',
+    img: 'img/leiaorgana.png',
     id: 5,
 },
 {
     name: 'Darth Vader',
-    img: 'img/placeholder.jpg',
+    img: 'img/darthvader.png',
     id: 4,
 },
 {
     name: 'Yoda',
-    img: 'img/placeholder.jpg',
+    img: 'img/yoda.png',
     id: 20,
 },
 {
     name: 'R2-D2',
-    img: 'img/placeholder.jpg',
+    img: 'img/r2-d2.png',
     id: 3,
 },
 {
     name: 'Chewbacca',
-    img: 'img/placeholder.jpg',
+    img: 'img/chewbacca.png',
     id: 13,
 }];
 let main = document.querySelector('main');
@@ -34,6 +34,8 @@ let selectedArr = [];
 
 function startView(arr) {
     h1.innerText = 'Choose two characters:';
+    let flexDiv = document.createElement('div');
+    flexDiv.classList.add('flexDiv')
     let selectCharacterDiv = document.createElement('div');
     selectCharacterDiv.classList.add('selectDiv');
     let submitBtn = document.createElement('button');
@@ -49,6 +51,7 @@ function startView(arr) {
         p.innerText = obj.name;
         btn.append(img, p);
         selectCharacterDiv.append(btn);
+        flexDiv.append(selectCharacterDiv, submitBtn);
 
         btn.addEventListener('click', (e) => {
             let btn = e.target.parentElement;
@@ -60,7 +63,7 @@ function startView(arr) {
             }
         })
     })
-    main.append(selectCharacterDiv, submitBtn);
+    main.append(flexDiv);
 
     submitBtn.addEventListener('click', () => {
         if(selectedArr.length < 2) {
@@ -88,7 +91,7 @@ class Character {
         this.movies = movies;
         this.home = home;
         this.vehicles = vehicles;
-        this.pictureUrl = `img/placeholder.jpg`/* ${this.name.toLowerCase().split(" ").join("")}.jpg */
+        this.pictureUrl = `img/${this.name.toLowerCase().split(" ").join("")}.png`
     }
     static compareHeight(characterOne, characterTwo) {
         if (characterOne.height > characterTwo.height) {
@@ -226,6 +229,7 @@ let newCharacters = async () => {
 
 let renderCharacter = (obj) => {
     let div = document.createElement('div');
+    div.classList.add('displayCharacter')
     let img = document.createElement('img');
     img.src = obj.pictureUrl;
     img.alt = obj.name;
@@ -289,6 +293,7 @@ let getArrayFunFact = (char1, char2) => {
 
 let renderFunFact = (arr, char1, char2) => {
     let div = document.createElement('div');
+    div.classList.add('funFact');
     let h2 = document.createElement('h2');
     h2.innerText = 'Fun Fact:'
     let ul = document.createElement('ul');
