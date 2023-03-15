@@ -56,11 +56,7 @@ function startView(arr) {
                 if(selectedArr.length < 2) {
                     selectedArr.push(btn.id)
                     btn.disabled = true;
-                    console.log(selectedArr)
                 }
-            }
-            else {
-                console.log('false')
             }
         })
     })
@@ -68,7 +64,7 @@ function startView(arr) {
 
     submitBtn.addEventListener('click', () => {
         if(selectedArr.length < 2) {
-            console.log('choose two characters')
+            alert('Please choose two characters!')
         }
         else {
             main.innerHTML = '';
@@ -81,7 +77,7 @@ function startView(arr) {
 startView(characterSelection);
 
 class Character {
-    constructor(name, gender, height, mass, hairColor, skinColor, eyeColor, movies, home) {
+    constructor(name, gender, height, mass, hairColor, skinColor, eyeColor, movies, home, vehicles) {
         this.name = name;
         this.gender = gender;
         this.height = Number(height);
@@ -91,6 +87,7 @@ class Character {
         this.eyeColor = eyeColor;
         this.movies = movies;
         this.home = home;
+        this.vehicles = vehicles;
         this.pictureUrl = `img/placeholder.jpg`/* ${this.name.toLowerCase().split(" ").join("")}.jpg */
     }
     static compareHeight(characterOne, characterTwo) {
@@ -135,10 +132,30 @@ class Character {
           return `${characterOne.name} and ${characterTwo.name} have the same eye color.`;
         } 
       }
+      static compareHomePlanet(characterOne, characterTwo) {
+        if (characterOne.home === characterTwo.home) {
+          return `${characterOne.name} and ${characterTwo.name} are from the same planet.`;
+        } 
+      }
+      static compareMovies(characterOne, characterTwo) {
+        let sameMovies = [];
+        characterOne.movies[0].forEach((movie) => {
+            if(characterTwo.movies[0].includes(movie)) {
+                sameMovies.push(movie)
+            }
+        })
+        let testFunc = async () => {
+            let data = await getMovie(sameMovies)
+            let titles = movies(data)
+            return `${characterOne.name} and ${characterTwo.name} both appeare in ${titles}`
+        }
+        return testFunc()
+
+        /* return getMovie() */
+      }
       static firstMovie(character) {
         let getFirstMovie = async () => {
             let firstMovie = await getExtraData(character.movies[0][0])
-            console.log(firstMovie)
             return `${character.name} first appeared in a movie ${firstMovie.release_date}`
         }
         return getFirstMovie()
@@ -146,21 +163,26 @@ class Character {
       static homePlanet(character) {
         let getHomePlanet = async () => {
             let homePlanet = await getExtraData(character.home)
-            console.log(homePlanet)
             return `${character.name} is from ${homePlanet.name}`
         }
         return getHomePlanet()
       }
-      static compareHomePlanet(characterOne, characterTwo) {
-        if (characterOne.home === characterTwo.home) {
-          return `${characterOne.name} and ${characterTwo.name} are from the same planet.`;
-        } 
-      }
+      static mostExpensiveVehicle(character) {
+        let getVehicle = async () => {
+            let promises = character.vehicles.map((vehicle) => getExtraData(vehicle))
+            let results = await Promise.all(promises)
+            const max = results.reduce(function(prev, current) {
+                return (Number(prev.cost_in_credits) > Number(current.cost_in_credits)) ? prev : current
+            })
+            return `The most expensive vehicle ${character.name} has is ${max.name}`
+        }
+        return getVehicle()
+    }
+      
 }
 
 
 let getData = async (id) => {
-    console.log(`https://swapi.dev/api/people/${id}/`)
     let data = await fetch(`https://swapi.dev/api/people/${id}/`) 
     let json = await data.json()
     return json
@@ -175,27 +197,31 @@ let getExtraData = async (https) => {
 let newCharacters = async () => {
     let promises = selectedArr.map((id) => getData(id));
     let results = await Promise.all(promises);
-    console.log(results)
     let character1;
     let character2;
     results.forEach((obj, i) => {
         if(i === 0) {
             let films = [obj.films]
+            let vehicles = [obj.vehicles]
+            let starships = [obj.starships]
+            let allVehicles = vehicles[0].concat(starships[0])
             character1 = new Character(obj.name, obj.gender, obj.height, obj.mass, obj.hair_color, 
-            obj.skin_color, obj.eye_color, films, obj.homeworld)
+            obj.skin_color, obj.eye_color, films, obj.homeworld, allVehicles)
             return renderCharacter(character1)
         }
         if(i === 1){
             let films = [obj.films]
+            let vehicles = [obj.vehicles]
+            let starships = [obj.starships]
+            let allVehicles = vehicles[0].concat(starships[0])
             character2 = new Character(obj.name, obj.gender, obj.height, obj.mass, obj.hair_color, 
-            obj.skin_color, obj.eye_color, films, obj.homeworld)
+            obj.skin_color, obj.eye_color, films, obj.homeworld, allVehicles)
             return renderCharacter(character2)
         }
         
     })
     let funFactArr = getArrayFunFact(character1, character2);
-    renderFunFact(funFactArr)
-    console.log(funFactArr)
+    renderFunFact(funFactArr, character1, character2)
 }
 
 let renderCharacter = (obj) => {
@@ -213,21 +239,45 @@ let renderCharacter = (obj) => {
     <li>Skin color: ${obj.skinColor}</li>
     <li>Eye color: ${obj.eyeColor}</li>
     <li>Amount of movies: ${obj.movies[0].length}</li>`
+
     let btnFirstMovie = document.createElement('button');
-    btnFirstMovie.innerText = 'First movie'
+    btnFirstMovie.innerText = 'First movie';
+    btnFirstMovie.classList.add('popup');
+    let movieSpan = document.createElement('span');
+    movieSpan.classList.add('popuptext');
+    movieSpan.id = 'myPopup';
+    btnFirstMovie.append(movieSpan);
+
     let btnHomePlanet = document.createElement('button');
-    btnHomePlanet.innerText = 'Home planet'
-    div.append(img, h2, ul, btnFirstMovie, btnHomePlanet);
-    console.log(div)
+    btnHomePlanet.innerText = 'Home planet';
+    btnHomePlanet.classList.add('popup');
+    let homePlanetSpan = document.createElement('span');
+    homePlanetSpan.classList.add('popuptext');
+    homePlanetSpan.id = 'myPopup';
+    btnHomePlanet.append(homePlanetSpan);
+
+    let btnExpensiveVehicle = document.createElement('button');
+    btnExpensiveVehicle.innerText = 'Most expensive vehicle';
+    btnExpensiveVehicle.classList.add('popup');
+    let vehicleSpan = document.createElement('span');
+    vehicleSpan.classList.add('popuptext');
+    vehicleSpan.id = 'myPopup';
+    btnExpensiveVehicle.append(vehicleSpan);
+
+    div.append(img, h2, ul, btnFirstMovie, btnHomePlanet, btnExpensiveVehicle);
     main.append(div);
 
-    btnFirstMovie.addEventListener('click', async () => {
+    btnFirstMovie.addEventListener('click', async () => { 
         let firstMovie = await Character.firstMovie(obj);
-        console.log(firstMovie);
+        popUp(movieSpan, firstMovie)
     })
     btnHomePlanet.addEventListener('click', async () => {
         let homePlanet = await Character.homePlanet(obj);
-        console.log(homePlanet);
+        popUp(homePlanetSpan, homePlanet)
+    })
+    btnExpensiveVehicle.addEventListener('click', async () => {
+        let vehicle = await Character.mostExpensiveVehicle(obj);
+        popUp(vehicleSpan, vehicle)
     })
 }
 
@@ -237,7 +287,7 @@ let getArrayFunFact = (char1, char2) => {
     return funFactArr
 }
 
-let renderFunFact = (arr) => {
+let renderFunFact = (arr, char1, char2) => {
     let div = document.createElement('div');
     let h2 = document.createElement('h2');
     h2.innerText = 'Fun Fact:'
@@ -250,6 +300,37 @@ let renderFunFact = (arr) => {
             ul.append(li);
         }
     })
-    div.append(h2, ul);
+    let btnCompareMovies = document.createElement('button');
+    btnCompareMovies.innerText = 'Compare movies';
+    btnCompareMovies.classList.add('popup');
+    let compareMoviesSpan = document.createElement('span');
+    compareMoviesSpan.classList.add('popuptext');
+    compareMoviesSpan.id = 'myPopup';
+    btnCompareMovies.append(compareMoviesSpan);
+
+    div.append(h2, ul, btnCompareMovies);
     main.append(div);
+
+    btnCompareMovies.addEventListener('click', async () => {
+        let sameMovies = await Character.compareMovies(char1, char2);
+        popUp(compareMoviesSpan, sameMovies)
+    })
+}
+
+let getMovie = async (arr) => {
+    let promises = arr.map((movie) => getExtraData(movie))
+    let results = await Promise.all(promises)
+    return results
+}
+let movies = (results) => {
+    let movieTitles = [];
+    results.forEach((result) => {
+        movieTitles.push(result.title)
+    })
+    return movieTitles
+} 
+
+let popUp = (span, value) => {
+    span.innerText = value;
+    span.classList.toggle("show");
 }
